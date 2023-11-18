@@ -9,7 +9,6 @@ public class Player : MonoBehaviour
     [SerializeField] private float gridSize;
     [SerializeField] private float moveTime;
     [SerializeField] private AnimationCurve jumpCurve;
-    [SerializeField] private float jumpHeight;
     [SerializeField] private LayerMask hitLayer;
 
     private Vector3 newPosition;
@@ -18,16 +17,34 @@ public class Player : MonoBehaviour
     private Quaternion oldRotation;
     private float lerpTimer;
     private Vector3 cameraOffset;
-    private Obstacles currentPlatform;
+    private GameObject currentPlatform;
 
     private void Start( )
     {
         lerpTimer = moveTime;
         cameraOffset = playerCamera.transform.position - transform.position;
+        oldRotation = Quaternion.identity;
+        newRotation = Quaternion.identity;
+        newPosition = transform.position;
     }
 
     private void Update( )
     {
+        var ray = new Ray( newPosition, transform.up * -1 );
+
+        if ( Physics.Raycast( ray, out RaycastHit hitInfo, 100, hitLayer ) )
+        {
+            currentPlatform = hitInfo.collider.gameObject;
+
+            var playerPlatformPos = newPosition - currentPlatform.transform.position;
+
+            var posY = newPosition.y;
+            newPosition = Vector3Int.RoundToInt( playerPlatformPos ) + currentPlatform.transform.position;
+            newPosition.y = posY;
+
+            // Debug.Log( newPosition );
+        }
+
         if ( lerpTimer >= moveTime )
         {
             var position = transform.position;
@@ -59,42 +76,26 @@ public class Player : MonoBehaviour
                 newRotation = Quaternion.LookRotation( ( position - transform.position ).normalized );
             }
         }
-        else
-        {
-            lerpTimer += Time.deltaTime;
-            transform.position = Vector3.Lerp( oldPosition, newPosition, lerpTimer / moveTime );
-            transform.rotation = Quaternion.Lerp( oldRotation, newRotation, lerpTimer / moveTime );
-            var position = transform.position;
-            position.y += jumpCurve.Evaluate( lerpTimer / moveTime ) * jumpHeight;
-            transform.position = position;
-        }
+
+
+        lerpTimer += Time.deltaTime;
+        transform.position = Vector3.Lerp( oldPosition, newPosition, lerpTimer / moveTime );
+        transform.rotation = Quaternion.Lerp( oldRotation, newRotation, lerpTimer / moveTime );
+        var position2 = transform.position;
+        position2.y += jumpCurve.Evaluate( lerpTimer / moveTime );
+        var transform1 = transform;
+        var position1 = transform1.position;
+        position1 = position2;
+        transform1.position = position1;
+
 
         Vector3 camPosition = playerCamera.transform.position;
-        camPosition.x = transform.position.x + cameraOffset.x;
-        camPosition.z = transform.position.z + cameraOffset.z;
-        
-        
+        camPosition.x = position1.x + cameraOffset.x;
+        camPosition.z = position1.z + cameraOffset.z;
+
+
         playerCamera.transform.position = camPosition;
 
-        var ray = new Ray( transform.position, transform.up * -1 );
-
-        if ( Physics.Raycast( ray, out RaycastHit hitInfo, 100, hitLayer ) )
-        {
-            if ( currentPlatform )
-            {
-                currentPlatform.playerMoving = null;
-            }
-            currentPlatform = hitInfo.collider.GetComponent<Obstacles>();
-            currentPlatform.playerMoving = gameObject;
-        }
-        else
-        {
-            if ( currentPlatform )
-            {
-                currentPlatform.playerMoving = null;
-            }
-        }
-
-
+        Debug.DrawLine( position1, newPosition, Color.red );
     }
 }

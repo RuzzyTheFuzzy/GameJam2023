@@ -9,9 +9,6 @@ public class Obstacles : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private float respawnDistance;
 
-    [NonSerialized]
-    public GameObject playerMoving;
-
     private Vector3 startPos;
 
     private void Start( )
@@ -22,8 +19,6 @@ public class Obstacles : MonoBehaviour
     void Update()
     {
         transform.position += direction * ( speed * Time.deltaTime );
-        if ( playerMoving )
-            playerMoving.transform.position += direction * ( speed * Time.deltaTime );
 
         if ( Vector3.Distance( transform.position, startPos ) >= respawnDistance )
         {
