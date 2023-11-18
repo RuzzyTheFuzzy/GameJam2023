@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float moveTime;
     [SerializeField] private AnimationCurve jumpCurve;
     [SerializeField] private LayerMask hitLayer;
+    [SerializeField] private GameObject deathSplashObject;
+    [SerializeField] private ParticleSystem jumpParticleObject;
 
     private Vector3 newPosition;
     private Vector3 oldPosition;
@@ -52,20 +54,23 @@ public class Player : MonoBehaviour
             if ( Input.GetKeyDown( "w" ) )
             {
                 position.z += gridSize;
+                StartCoroutine(SpawnJumpParticles());
             }
             else if ( Input.GetKeyDown( "a" ) )
             {
                 position.x -= gridSize;
+                StartCoroutine(SpawnJumpParticles());
             }
             else if ( Input.GetKeyDown( "s" ) )
             {
                 position.z -= gridSize;
+                StartCoroutine(SpawnJumpParticles());
             }
             else if ( Input.GetKeyDown( "d" ) )
             {
                 position.x += gridSize;
+                StartCoroutine(SpawnJumpParticles());
             }
-
             if ( position != transform.position )
             {
                 oldPosition = transform.position;
@@ -74,6 +79,12 @@ public class Player : MonoBehaviour
 
                 oldRotation = transform.rotation;
                 newRotation = Quaternion.LookRotation( ( position - transform.position ).normalized );
+            }
+            //If player isn't standing on platform, player dies
+            if (!Physics.Raycast(transform.position,Vector3.up*-1, out RaycastHit rayHitInfo,10,hitLayer) )
+            {
+                    // Debug.Log("Not on solid ground");
+                    StartCoroutine(PlayerDeath());
             }
         }
 
@@ -97,5 +108,17 @@ public class Player : MonoBehaviour
         playerCamera.transform.position = camPosition;
 
         Debug.DrawLine( position1, newPosition, Color.red );
+    }
+        private IEnumerator PlayerDeath()
+    {
+        Instantiate(deathSplashObject, transform.position,transform.rotation);
+        Destroy(gameObject);
+        yield break;
+    }
+
+    private IEnumerator SpawnJumpParticles()
+    {
+        Instantiate(jumpParticleObject, transform.position, transform.rotation);
+        yield break;
     }
 }
