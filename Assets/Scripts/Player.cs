@@ -8,6 +8,8 @@ public class Player : MonoBehaviour
     [SerializeField] private Camera playerCamera;
     [SerializeField] private float gridSize;
     [SerializeField] private float moveTime;
+    [SerializeField] private AnimationCurve jumpCurve;
+    [SerializeField] private float jumpHeight;
 
     private Vector3 newPosition;
     private Vector3 oldPosition;
@@ -61,8 +63,16 @@ public class Player : MonoBehaviour
             lerpTimer += Time.deltaTime;
             transform.position = Vector3.Lerp( oldPosition, newPosition, lerpTimer / moveTime );
             transform.rotation = Quaternion.Lerp( oldRotation, newRotation, lerpTimer / moveTime );
+            var position = transform.position;
+            position.y += jumpCurve.Evaluate( lerpTimer / moveTime ) * jumpHeight;
+            transform.position = position;
         }
 
-        playerCamera.transform.position = transform.position + cameraOffset;
+        Vector3 camPosition = playerCamera.transform.position;
+        camPosition.x = transform.position.x + cameraOffset.x;
+        camPosition.z = transform.position.z + cameraOffset.z;
+        
+        
+        playerCamera.transform.position = camPosition;
     }
 }
