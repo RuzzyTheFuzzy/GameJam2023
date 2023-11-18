@@ -10,14 +10,15 @@ public class Player : MonoBehaviour
     [SerializeField] private float moveTime;
     [SerializeField] private AnimationCurve jumpCurve;
     [SerializeField] private float jumpHeight;
+    [SerializeField] private LayerMask hitLayer;
 
     private Vector3 newPosition;
     private Vector3 oldPosition;
     private Quaternion newRotation;
     private Quaternion oldRotation;
     private float lerpTimer;
-
     private Vector3 cameraOffset;
+    private Obstacles currentPlatform;
 
     private void Start( )
     {
@@ -74,5 +75,26 @@ public class Player : MonoBehaviour
         
         
         playerCamera.transform.position = camPosition;
+
+        var ray = new Ray( transform.position, transform.up * -1 );
+
+        if ( Physics.Raycast( ray, out RaycastHit hitInfo, 100, hitLayer ) )
+        {
+            if ( currentPlatform )
+            {
+                currentPlatform.playerMoving = null;
+            }
+            currentPlatform = hitInfo.collider.GetComponent<Obstacles>();
+            currentPlatform.playerMoving = gameObject;
+        }
+        else
+        {
+            if ( currentPlatform )
+            {
+                currentPlatform.playerMoving = null;
+            }
+        }
+
+
     }
 }
