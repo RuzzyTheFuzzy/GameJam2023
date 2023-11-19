@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class Quiter : MonoBehaviour
 {
+    [SerializeField] private AudioSource audioSource;
+    
     private void Start( )
     {
         DontDestroyOnLoad( gameObject );
@@ -16,6 +18,13 @@ public class Quiter : MonoBehaviour
         if ( Input.GetKey( KeyCode.Escape ) )
         {
             Application.Quit();
+        }
+        if ( Input.GetKey( KeyCode.Alpha0 ) )
+        {
+            if ( !audioSource.isPlaying )
+            {
+                audioSource.Play();
+            }
         }
     }
 }
