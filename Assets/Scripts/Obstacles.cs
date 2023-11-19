@@ -15,7 +15,7 @@ public class Obstacles : MonoBehaviour
     private void Start( )
     {
         startPos = transform.position;
-        speed = Random.Range( 0.5f, 7f );
+        speed = Random.Range( 1.4f, 7f );
     }
 
     void Update()

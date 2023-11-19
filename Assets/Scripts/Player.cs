@@ -22,9 +22,9 @@ public class Player : MonoBehaviour
     private float lerpTimer;
     private Vector3 cameraOffset;
     private GameObject currentPlatform;
-    private float startX;
+    private float startZ;
 
-    public int bestXDistance { get; private set; }
+    public int bestZDistance { get; private set; }
 
     private void Start( )
     {
@@ -33,17 +33,19 @@ public class Player : MonoBehaviour
         oldRotation = transform.rotation;
         newRotation = oldRotation;
         newPosition = transform.position;
-        
+
+        startZ = transform.position.z;
+
     }
 
     private void Update( )
     {
-        if ( Mathf.FloorToInt( transform.position.x - startX ) > bestXDistance )
+        if ( Mathf.FloorToInt( transform.position.z - startZ ) > bestZDistance )
         {
-            bestXDistance = Mathf.FloorToInt( transform.position.x - startX );
+            bestZDistance = Mathf.FloorToInt( transform.position.z - startZ );
         }
 
-        if ( bestXDistance >= 280 )
+        if ( bestZDistance >= 280 )
         {
             SceneManager.LoadScene( "MainMenu" );
         }
