@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask groundLayers;
     [SerializeField] private GameObject deathSplashObject;
     [SerializeField] private ParticleSystem jumpParticleObject;
+    [SerializeField] private AudioSource audioSource;
 
     private Vector3 newPosition;
     private Vector3 oldPosition;
@@ -87,6 +88,8 @@ public class Player : MonoBehaviour
             }
             if ( position != transform.position )
             {
+                audioSource.Play();
+                
                 oldPosition = transform.position;
                 var posY = position.y;
                 newPosition = Vector3Int.RoundToInt(position);
