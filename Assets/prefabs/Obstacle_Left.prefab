@@ -120,4 +120,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   direction: {x: -1, y: 0, z: 0}
   speed: 3
-  respawnDistance: 20
+  respawnDistance: 64

@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class Obstacles : MonoBehaviour
 {
-    [SerializeField] private Vector3 direction;
+    public Vector3 direction;
     [SerializeField] private float speed;
     [SerializeField] private float respawnDistance;
 
