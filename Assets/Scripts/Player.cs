@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -21,6 +22,9 @@ public class Player : MonoBehaviour
     private float lerpTimer;
     private Vector3 cameraOffset;
     private GameObject currentPlatform;
+    private float startX;
+
+    public int bestXDistance { get; private set; }
 
     private void Start( )
     {
@@ -29,10 +33,21 @@ public class Player : MonoBehaviour
         oldRotation = transform.rotation;
         newRotation = oldRotation;
         newPosition = transform.position;
+        
     }
 
     private void Update( )
     {
+        if ( Mathf.FloorToInt( transform.position.x - startX ) > bestXDistance )
+        {
+            bestXDistance = Mathf.FloorToInt( transform.position.x - startX );
+        }
+
+        if ( bestXDistance >= 280 )
+        {
+            SceneManager.LoadScene( "MainMenu" );
+        }
+        
         var ray = new Ray( newPosition + Vector3.up * 0.1f, transform.up * -1 );
 
         if ( Physics.Raycast( ray, out RaycastHit hitInfo, 100, hitLayer ) )
