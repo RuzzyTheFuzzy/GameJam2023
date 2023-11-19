@@ -17,16 +17,14 @@ public class PlatformSpawner : MonoBehaviour
             Obstacles obstacleComponent = newObstacle.GetComponent<Obstacles>();
 
             position.z += i;
-
-            int randomInt = Random.Range( 0, 2 );
-
-            if ( randomInt == 0 )
+            
+            if ( i % 2 == 0 )
             {
                 position.x += spawnXOffset;
                 newObstacle.transform.position = position;
                 obstacleComponent.direction.x = -1;
             }
-            else if ( randomInt == 1 )
+            else if ( i % 2 == 1 )
             {
                 position.x -= spawnXOffset;
                 newObstacle.transform.position = position;
