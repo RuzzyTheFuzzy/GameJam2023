@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Obstacles : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class Obstacles : MonoBehaviour
     private void Start( )
     {
         startPos = transform.position;
+        speed = Random.Range( 0.5f, 7f );
     }
 
     void Update()

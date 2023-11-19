@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float moveTime;
     [SerializeField] private AnimationCurve jumpCurve;
     [SerializeField] private LayerMask hitLayer;
+    [SerializeField] private LayerMask groundLayers;
     [SerializeField] private GameObject deathSplashObject;
     [SerializeField] private ParticleSystem jumpParticleObject;
 
@@ -25,14 +26,14 @@ public class Player : MonoBehaviour
     {
         lerpTimer = moveTime;
         cameraOffset = playerCamera.transform.position - transform.position;
-        oldRotation = Quaternion.identity;
-        newRotation = Quaternion.identity;
+        oldRotation = transform.rotation;
+        newRotation = oldRotation;
         newPosition = transform.position;
     }
 
     private void Update( )
     {
-        var ray = new Ray( newPosition, transform.up * -1 );
+        var ray = new Ray( newPosition + Vector3.up * 0.1f, transform.up * -1 );
 
         if ( Physics.Raycast( ray, out RaycastHit hitInfo, 100, hitLayer ) )
         {
@@ -54,34 +55,34 @@ public class Player : MonoBehaviour
             if ( Input.GetKeyDown( "w" ) )
             {
                 position.z += gridSize;
-                StartCoroutine(SpawnJumpParticles());
             }
             else if ( Input.GetKeyDown( "a" ) )
             {
                 position.x -= gridSize;
-                StartCoroutine(SpawnJumpParticles());
             }
             else if ( Input.GetKeyDown( "s" ) )
             {
                 position.z -= gridSize;
-                StartCoroutine(SpawnJumpParticles());
             }
             else if ( Input.GetKeyDown( "d" ) )
             {
                 position.x += gridSize;
-                StartCoroutine(SpawnJumpParticles());
             }
             if ( position != transform.position )
             {
                 oldPosition = transform.position;
-                newPosition = position;
+                var posY = position.y;
+                newPosition = Vector3Int.RoundToInt(position);
+                newPosition.y = posY;
                 lerpTimer = 0;
 
                 oldRotation = transform.rotation;
                 newRotation = Quaternion.LookRotation( ( position - transform.position ).normalized );
+                
+                StartCoroutine(SpawnJumpParticles());
             }
             //If player isn't standing on platform, player dies
-            if (!Physics.Raycast(transform.position,Vector3.up*-1, out RaycastHit rayHitInfo,10,hitLayer) )
+            if (!Physics.Raycast(transform.position + Vector3.up * 0.1f,Vector3.up*-1, out RaycastHit rayHitInfo,10,groundLayers) )
             {
                     // Debug.Log("Not on solid ground");
                     StartCoroutine(PlayerDeath());
@@ -118,7 +119,7 @@ public class Player : MonoBehaviour
 
     private IEnumerator SpawnJumpParticles()
     {
-        Instantiate(jumpParticleObject, transform.position, transform.rotation);
+        Instantiate(jumpParticleObject, transform.position, newRotation);
         yield break;
     }
 }
